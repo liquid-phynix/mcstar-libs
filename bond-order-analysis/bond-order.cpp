@@ -223,7 +223,7 @@ double q4b(Point& atom, Pvec& pvec){
     for(int m = -4; m <= 4; m++){
         Comp csum=atom.q4m[m+4];
         for(int nbi: atom.nbor_i) csum += pvec[nbi].q4m[m+4];
-        csum /= (double)atom.nbor_i.size();
+        csum /= 1 + (double)atom.nbor_i.size();
         sum += pow(fabs(csum),2);
     }
     return sqrt(4*Pi/9 * sum);
@@ -233,7 +233,7 @@ double q6b(Point& atom, Pvec& pvec){
     for(int m = -6; m <= 6; m++){
         Comp csum=atom.q6m[m+6];
         for(int nbi: atom.nbor_i) csum += pvec[nbi].q6m[m+6];
-        csum /= (double)atom.nbor_i.size();
+        csum /= 1 + (double)atom.nbor_i.size();
         sum += pow(fabs(csum),2);
     }
     return sqrt(4*Pi/13 * sum);
@@ -243,7 +243,7 @@ double q8b(Point& atom, Pvec& pvec){
     for(int m = -8; m <= 8; m++){
         Comp csum=atom.q8m[m+8];
         for(int nbi: atom.nbor_i) csum += pvec[nbi].q8m[m+8];
-        csum /= (double)atom.nbor_i.size();
+        csum /= 1 + (double)atom.nbor_i.size();
         sum += pow(fabs(csum),2);
     }
     return sqrt(4*Pi/17 * sum);
