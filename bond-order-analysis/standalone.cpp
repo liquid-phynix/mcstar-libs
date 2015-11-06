@@ -1,5 +1,6 @@
 #include <vector>
 #include <iostream>
+#include <cstdlib>
 #include "maximum_struct.hpp"
 #include "bond-order.hpp"
 
@@ -7,7 +8,7 @@ typedef Maximum<double> M;
 
 int main(int argc, char* argv[]){
     if(argc != 3){
-        std::cerr << "usage: " << argv[0] << " <cutoff> <edgelen>" << std::endl;
+        std::cerr << "usage: " << argv[0] << " <edgelen> <rlim>" << std::endl;
         exit(EXIT_FAILURE);
     }
 
@@ -26,7 +27,8 @@ int main(int argc, char* argv[]){
         maxima.push_back(m);
     }
     //std::cerr << "vector length=" << maxima.size() << std::endl;
-    bond_order_analysis(maxima.data(), maxima.size(), 1, 1, 1, 0, atof(argv[2]), atof(argv[1]), stdout);
+    // bond_order_analysis(          , input_len    , h0, h1, h2, ths , boxsize      , rlim         , fp);
+    bond_order_analysis(maxima.data(), maxima.size(), 1 , 1 , 1 , -1e6, atof(argv[1]), atof(argv[2]), stdout);
 
     return 0;
 }
