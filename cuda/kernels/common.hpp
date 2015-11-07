@@ -11,6 +11,7 @@ __forceinline__ __device__ int wrap(int i, int n){
 __forceinline__ __device__ int calc_idx(int i0, int i1, int i2, int3 dims){
     return (i2 * dims.y + i1) * dims.x + i0; }
 
+#ifdef defined(Float) && defined(Float2)
 // laplace^2
 __forceinline__ __device__ Float2 L_L2(Float k0, Float k1, Float k2){
     Float2 ret;
@@ -23,6 +24,7 @@ __forceinline__ __device__ Float2 L_L2(Float k0, Float k1, Float k2){
     //return i < np2m1 ? (i * f) : (f * (i - n)); }
 __forceinline__ __device__ Float K(int i, int n, Float len){
 return (i < n / 2 + 1 ? i : i - n) * Float(6.283185307179586232) / len; }
+#endif
 
 unsigned int div_up(int a, int b){
     const div_t r = div(a, b);
