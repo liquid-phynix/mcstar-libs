@@ -48,8 +48,8 @@ __global__ void kernel_correct_random_spectrum_write(float2* arr, float2* dev_1,
     float2* dev_ptr[2] = {dev_1, dev_2};
     if(i1 >= cdims.y or i2 >= cdims.z) return;
     int idx_3d_wo_i0 = (i2 * cdims.y + i1) * cdims.x;// + i0;
-    int i1_m = (-i1) % cdims.y;
-    int i2_m = (-i2) % cdims.z;
+    int i1_m = posrem(-i1, cdims.y);
+    int i2_m = posrem(-i2, cdims.z);
     int idx_2d = i2 * cdims.y + i1;
     int idx_2d_mirror = i2_m * cdims.y + i1_m;
 

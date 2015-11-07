@@ -5,7 +5,7 @@ int i2 = blockIdx.z * blockDim.z + threadIdx.z; \
 int idx = calc_idx(i0, i1, i2, dims); \
 if(i0 >= dims.x or i1 >= dims.y or i2 >= dims.z) return;
 
-__forceinline__ __device__ int wrap(int i, int n){
+__host__ __device__ int wrap(int i, int n){
     return i < 0 ? (i + n) : (i >= n ? (i - n) : i); }
 
 __forceinline__ __device__ int calc_idx(int i0, int i1, int i2, int3 dims){
@@ -29,6 +29,10 @@ return (i < n / 2 + 1 ? i : i - n) * Float(6.283185307179586232) / len; }
 unsigned int div_up(int a, int b){
     const div_t r = div(a, b);
     return r.quot + int(r.rem > 0); }
+
+__host__ __device__ unsigned int posrem(int n, int m){
+    return n - (n / m - int(n<0)) * m;
+}
 
 struct Launch {
     const dim3 bs1d = {512};

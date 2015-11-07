@@ -7,6 +7,7 @@ typedef float Float;
 
 typedef Array::CPUArray<Float> CPUArray;
 typedef Array::GPUArray<Float> GPUArray;
+using Array::AsCmpl;
 
 int main(int argc, char* argv[]){
     if(argc != 5){
@@ -19,13 +20,15 @@ int main(int argc, char* argv[]){
     std::string outfile(argv[4]);
 
     CPUArray host_array(shape);
+    host_array.set_to(0);
     GPUArray dev_array(host_array);
+    host_array.set_to(0);
 
     NoiseHostApi<Float> noise;
 
     noise.fill_kspace(dev_array);
     dev_array >> host_array;
-    host_array.save(outfile);
+    host_array.save<AsCmpl>(outfile);
 
     return 0;
 }
