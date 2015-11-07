@@ -8,11 +8,11 @@ class NoiseHostApi {
     private:
         curandGenerator_t gen;
         // pseudo random number generator types
-        curandRngType T1 = CURAND_RNG_PSEUDO_XORWOW;
-        curandRngType T2 = CURAND_RNG_PSEUDO_MRG32K3A;
-        curandRngType T3 = CURAND_RNG_PSEUDO_MTGP32;
+        const curandRngType T1 = CURAND_RNG_PSEUDO_XORWOW;
+        const curandRngType T2 = CURAND_RNG_PSEUDO_MRG32K3A;
+        const curandRngType T3 = CURAND_RNG_PSEUDO_MTGP32;
     public:
-        NoiseHostApi(unsigned long long int seed = 1234){
+        NoiseHostApi(unsigned long long int seed = 1234L){
             CURAND_CALL(curandCreateGenerator(&gen, T1));
             CURAND_CALL(curandSetPseudoRandomGeneratorSeed(gen, seed)); }
         ~NoiseHostApi(){
@@ -31,7 +31,7 @@ __global__ void kernel_correct_random_spectrum_read(float2* arr, float2* dev_1, 
     int i1 = blockIdx.y * blockDim.y + threadIdx.y;
     int i2 = blockIdx.z * blockDim.z + threadIdx.z;
     int i0s[2] = {0, cdims.x - 1};
-    Float2* dev_ptr[2] = {dev_1, dev_2};
+    float2* dev_ptr[2] = {dev_1, dev_2};
     if(i1 >= cdims.y or i2 >= cdims.z) return;
     int idx_3d_wo_i0 = (i2 * cdims.y + i1) * cdims.x;// + i0;
     int idx_2d = i2 * cdims.y + i1;
@@ -44,7 +44,7 @@ __global__ void kernel_correct_random_spectrum_write(float2* arr, float2* dev_1,
     int i1 = blockIdx.y * blockDim.y + threadIdx.y;
     int i2 = blockIdx.z * blockDim.z + threadIdx.z;
     int i0s[2] = {0, cdims.x - 1};
-    Float2* dev_ptr[2] = {dev_1, dev_2};
+    float2* dev_ptr[2] = {dev_1, dev_2};
     if(i1 >= cdims.y or i2 >= cdims.z) return;
     int idx_3d_wo_i0 = (i2 * cdims.y + i1) * cdims.x;// + i0;
     int i1_m = (-i1) % cdims.y;

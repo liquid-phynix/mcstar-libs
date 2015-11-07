@@ -1,7 +1,7 @@
 #pragma once
 
 #include <cufft.h>
-#include <array_abstraction.hpp>
+#include <cuda/array_abstraction.hpp>
 
 namespace CuErr {
 #include <cstdio>
