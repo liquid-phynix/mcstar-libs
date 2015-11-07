@@ -22,7 +22,7 @@ int main(int argc, char* argv[]){
     CPUArray host_array(shape);
     GPUArray dev_array(host_array);
 
-    NoiseHostApi noise;
+    NoiseHostApi<Float> noise;
 
     noise.fill_kspace(dev_array);
     dev_array >> host_array;
