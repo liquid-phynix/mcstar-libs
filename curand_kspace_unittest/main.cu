@@ -1,6 +1,5 @@
 #include <iostream>
 #include <cuda/array_abstraction.hpp>
-#include <cuda/cufft_wrapper.hpp>
 #include <common/cu_error.hpp>
 #include <cuda/noise.hpp>
 
