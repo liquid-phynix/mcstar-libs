@@ -1,6 +1,6 @@
 #include <iostream>
-#include <array_abstraction.hpp>
-#include <cufft_wrapper.hpp>
+#include <cuda/array_abstraction.hpp>
+#include <cuda/cufft_wrapper.hpp>
 #include <common/cu_error.hpp>
 
 // FLOAT is defined during compilation
@@ -30,10 +30,10 @@ int main(int argc, char* argv[]){
 
     int3 shape = {atoi(argv[1]), atoi(argv[2]), atoi(argv[3])};
     // I restrict the extent of the dimensions, because I wouldnt use other factorization anyway
-    if(not (factors235(shape.x) and factors235(shape.y) and factors235(shape.z))){
-        std::cerr << "length along a dimension is not factorized by 2,3,5" << std::endl;
-        exit(EXIT_FAILURE);
-    }
+    /*if(not (factors235(shape.x) and factors235(shape.y) and factors235(shape.z))){*/
+        /*std::cerr << "length along a dimension is not factorized by 2,3,5" << std::endl;*/
+        /*exit(EXIT_FAILURE);*/
+    /*}*/
     std::string infile(argv[4]);
     std::string outfile(argv[5]);
 

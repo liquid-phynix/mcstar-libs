@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 
-LIBS='/home/mcstar/src/libsrc'
+LIBS='/home/mcstar/src/mcstar-libs/'
 CXX='g++-4.8'
 CCAP='35'
 
