@@ -4,8 +4,7 @@
 #include <common/cu_error.hpp>
 #include <cuda/noise.hpp>
 
-// FLOAT is defined during compilation
-typedef FLOAT Float;
+typedef float Float;
 
 typedef Array::CPUArray<Float> CPUArray;
 typedef Array::GPUArray<Float> GPUArray;
@@ -31,3 +30,4 @@ int main(int argc, char* argv[]){
 
     return 0;
 }
+// nvcc -ccbin=g++-4.8 -std=c++11 -I/home/mcstar/src/mcstar-libs -arch=sm_35 -lcurand -o main main.cu

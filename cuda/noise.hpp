@@ -1,7 +1,8 @@
 #include <curand_kernel.h>
 #include <curand_mtgp32_host.h>
 #include <curand_mtgp32dc_p_11213.h>
-#include <curand_error.hpp>
+#include <cuda/curand_error.hpp>
+#include <cuda/kernels/common.hpp>
 
 template <typename F>
 class NoiseHostApi {
