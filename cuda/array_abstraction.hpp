@@ -122,6 +122,8 @@ namespace Array {
             this->m_ptr = ptr; }
         // idx[0] >> idx[1] >> idx[2]
         // idx.x >> idx.y >> idx.z
+        inline F& operator[](int idx){
+            return this->m_ptr[idx]; }
         inline F& operator[](int3 idx){
             return this->m_ptr[(idx.z * this->m_ext_real.y + idx.y) * this->m_ext_real.x + idx.x]; }
         void load(const std::string fn){
