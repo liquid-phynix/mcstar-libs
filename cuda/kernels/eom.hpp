@@ -1,3 +1,5 @@
+#include <cuda/kernels/common.hpp>
+
 __global__ void kernel_update_eom(Float2* arr_kpsi, Float2* arr_knonlin, Float2* arr_knoise, int3 rdims, int3 cdims, Float dt, Float eps, Float3 lens){
     IDX012(cdims);
     const Float2 kpsi = arr_kpsi[idx];

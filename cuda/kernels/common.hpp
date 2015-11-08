@@ -1,3 +1,5 @@
+#pragma once
+
 #define IDX012(dims) \
 int i0 = blockIdx.x * blockDim.x + threadIdx.x; \
 int i1 = blockIdx.y * blockDim.y + threadIdx.y; \
@@ -11,7 +13,7 @@ __host__ __device__ int wrap(int i, int n){
 __forceinline__ __device__ int calc_idx(int i0, int i1, int i2, int3 dims){
     return (i2 * dims.y + i1) * dims.x + i0; }
 
-#if defined(Float) && defined(Float2)
+#ifdef FLOAT
 // laplace^2
 __forceinline__ __device__ Float2 L_L2(Float k0, Float k1, Float k2){
     Float2 ret;
@@ -31,8 +33,7 @@ unsigned int div_up(int a, int b){
     return r.quot + int(r.rem > 0); }
 
 __host__ __device__ unsigned int posrem(int n, int m){
-    return n - (n / m - int(n<0)) * m;
-}
+    return n - (n / m - int(n<0)) * m; }
 
 struct Launch {
     const dim3 bs1d = {512};
