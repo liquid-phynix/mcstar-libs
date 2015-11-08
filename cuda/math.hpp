@@ -5,7 +5,7 @@ dim3 i2d3(const int  v){ return dim3(v,   1,   1); }
 dim3 i2d3(const int2 v){ return dim3(v.x, v.y, 1); }
 dim3 i2d3(const int3 v){ return dim3(v.x, v.y, v.z); }
 
-typedef boost::rational<int> Irat;
+//typedef boost::rational<int> Irat;
 
 inline int norm2(int3 v){ return v.x * v.x + v.y * v.y + v.z * v.z; }
 inline double norm2(double3 v){ return v.x * v.x + v.y * v.y + v.z * v.z; }
@@ -25,6 +25,7 @@ inline int3 cross_int3(int3 pv, int3 qv){
            pv.z * qv.x - pv.x * qv.z,
            pv.x * qv.y - pv.y * qv.x }; }
 
+  /*
 int3 canonical_miller(int3 m){
   if(m.x == 0 and m.y == 0 and m.z == 0){
     std::cerr << "Miller-indices cannot be zero all at once" << std::endl; exit(-1); }
@@ -42,6 +43,7 @@ double z_full_mult(int3 pv, int3 qv, double* _d = NULL){
   std::cout << "crystal plane spacing(sigma=1): " << d << "\n"
             << "z-periodic multiplier(sigma=1): " << mult << std::endl;
   return mult * d; }
+  */
 
 double condition_2x2(double* arr){
   double a = arr[0] * arr[0] + arr[2] * arr[2];
@@ -63,6 +65,7 @@ double crystal_condition(int3 pv, int3 qv){
                     0,     inner(qv, nvu) };
   return condition_2x2(mat); }
 
+  /*
 int3 integrify(int i1, int i2, Irat r3){
   return {i1 * r3.denominator(), i2 * r3.denominator(), r3.numerator() * r3.denominator()}; }
 
@@ -85,6 +88,7 @@ double find_basis(int m1, int m2, int m3, int3& pv_out, int3& qv_out){
               qv_out = qv; }}}}}}
   assert(condition != std::numeric_limits<double>::infinity() and "find_basis failed");
   return condition; }
+  */
 
 // calculate the max(abs(.)) convergence from the difference of the prev and current timesteps
 /*
