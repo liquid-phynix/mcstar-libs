@@ -1,7 +1,7 @@
 #include <vector>
 #include <iostream>
 #include <cstdlib>
-#include "maximum_struct.hpp"
+#include <common/maximum_struct.hpp>
 #include "bond-order.hpp"
 
 typedef Maximum<double> M;

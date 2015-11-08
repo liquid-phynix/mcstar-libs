@@ -6,7 +6,7 @@
 #include <complex>
 #include <functional>
 #include <omp.h>
-#include "maximum_struct.hpp"
+#include <common/maximum_struct.hpp>
 
 double ths = -1e6;
 double boxsize = 256;
