@@ -18,11 +18,15 @@ __global__ void kernel_update_eom(Float2* arr_kpsi, Float2* arr_knonlin, Float2*
     const Float2 kpsi = arr_kpsi[idx];
     const Float2 knonlin = arr_knonlin[idx];
     const Float2 knoise = arr_knoise[idx];
-    const Float2 dop = L_L2(K(i0, rdims.x, lens.x), K(i1, rdims.y, lens.y), K(i2, rdims.z, lens.z));
+    const Float kx = K(i0, rdims.x, lens.x);
+    const Float ky = K(i1, rdims.y, lens.y);
+    const Float kz = K(i2, rdims.z, lens.z);
+    const Float k = sqrtf(kx * kx + ky * ky + kz * kz);
+    const Float2 dop = L_L2(kx, ky, kz);
     const Float denom = Float(1) - dt * ((Float(2) - eps) * dop.x + Float(2) * dop.y + dop.x * dop.y);
     namp *= sqrtf(rdims.x * rdims.y * rdims.z);
-    arr_kpsi[idx] = { (kpsi.x + dt * dop.x * knonlin.x + dt * namp * knoise.x) / denom,
-                      (kpsi.y + dt * dop.x * knonlin.y + dt * namp * knoise.y) / denom }; }
+    arr_kpsi[idx] = { (kpsi.x + dt * dop.x * knonlin.x + dt * namp * k * knoise.x) / denom,
+                      (kpsi.y + dt * dop.x * knonlin.y + dt * namp * k * knoise.y) / denom }; }
 
 void call_kernel_update_eom(GPUArray& arr_kpsi, GPUArray& arr_knonlin, GPUArray& arr_knoise,
                             Float namp, Float dt, Float eps, Float3 lens){
