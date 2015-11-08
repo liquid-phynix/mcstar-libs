@@ -22,7 +22,6 @@ int main(int argc, char* argv[]){
     CPUArray host_array(shape);
     host_array.set_to(0);
     GPUArray dev_array(host_array);
-    host_array.set_to(0);
 
     NoiseHostApi<Float> noise;
 
