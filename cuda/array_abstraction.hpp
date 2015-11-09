@@ -7,6 +7,7 @@
 #include <sys/mman.h>
 #include <cassert>
 #include <stdexcept>
+#include <future>
 #include <common/npyutil.hpp>
 #include <common/cu_error.hpp>
 #include <common/technicalities.hpp>
@@ -95,20 +96,28 @@ namespace Array {
     };
 
     template <typename F> struct CPUArray : public Array <F> {
+        F* m_ptr_save;
+        std::future<void> m_done_saving;
         CPUArray(CPUArray<F>& from): Array<F>(from.real_vext()){
+            m_ptr_save = NULL;
             CUERR(cudaHostAlloc((void**)&this->m_ptr, this->m_bytes, cudaHostAllocDefault));
             CUERR(cudaPeekAtLastError());
             if(mlock(this->m_ptr, this->m_bytes) != 0)
                 std::cerr << "*** host memory not pinned" << std::endl;
             from >> (*this); }
         CPUArray(int3 ext): Array<F>(ext){
+            m_ptr_save = NULL;
             CUERR(cudaHostAlloc((void**)&this->m_ptr, this->m_bytes, cudaHostAllocDefault));
             CUERR(cudaPeekAtLastError());
             if(mlock(this->m_ptr, this->m_bytes) != 0)
                 std::cerr << "*** host memory not pinned" << std::endl;
             memset(this->ptr_void(), 0, this->m_bytes); }
-        ~CPUArray(){ CUERR(cudaFreeHost(this->m_ptr)); }
+        ~CPUArray(){
+            CUERR(cudaFreeHost(this->m_ptr));
+            if(m_ptr_save)
+                CUERR(cudaFreeHost(this->m_ptr_save)); }
         void operator>>(CPUArray<F>& o){
+            if(m_done_saving.valid()) m_done_saving.wait();
             assert(o.real_vext() == this->m_ext_real and "array dimensions differ");
             memcpy(o.ptr_void(), this->m_ptr, this->m_bytes); }
         void operator>>(GPUArray<F>& o){
@@ -143,9 +152,21 @@ namespace Array {
                          memcpy(this->m_ptr, data.data(), this->m_bytes);
                          fprintf(stderr, "*** array initialized from file <%s>\n", fn.c_str()); fflush(stderr); }
         template <typename Kind=AsReal> void save(const std::string fn){
-            int3 rshape = shape_tr(this->real_vext());
-            int3 cshape = shape_tr(this->cmpl_vext());
-            numpy_save<F, Kind>(fn, this->m_dims, (int*)&rshape, (int*)&cshape, this->ptr_void()); }
+            std::cout << "entered saving " << fn << std::endl;
+            if(m_done_saving.valid()) m_done_saving.wait();
+            if(this->m_ptr_save == NULL){
+                CUERR(cudaHostAlloc((void**)&this->m_ptr_save, this->m_bytes, cudaHostAllocDefault));
+                CUERR(cudaPeekAtLastError());
+            }
+            memcpy(this->m_ptr_save, this->m_ptr, this->m_bytes);
+            m_done_saving = std::async([this, &fn](){
+                std::cout << "started saving " << fn << std::endl;
+                int3 rshape = shape_tr(this->real_vext());
+                int3 cshape = shape_tr(this->cmpl_vext());
+                numpy_save<F, Kind>(fn, this->m_dims, (int*)&rshape, (int*)&cshape, this->m_ptr_save);
+                std::cout << "finished saving " << fn << std::endl;
+            });
+        }
         //template <typename Kind = AsReal> void save(const boost::format fmt){
             //this->save(fmt.str()); }
         void over(std::function<void (F&)> closure){
