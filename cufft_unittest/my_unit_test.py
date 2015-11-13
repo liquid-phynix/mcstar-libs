@@ -142,10 +142,54 @@ class TestB(Tests):
             if err > maxerr:
                 raise TestFailure('test concluded with too great an error')
 
+class TestC(Tests):
+    # CYCLE, PREC, INPLACE
+    def __init__(self, prec='float', inplace=1):
+        self.prec = prec
+        self.name = 'TestB'
+        super(TestB, self).__init__((0, prec, inplace))
+        self.files_to_unlink = []
+    def __del__(self):
+        #print 'to unlink: %s' % str(self.files_to_unlink)
+        for f in self.files_to_unlink:
+            try:
+                os.unlink(f)
+            except os.error: pass
+    def __call__(self):
+        infile_fmt = 'infile_%d.npy'
+        outfile_fmt = 'outfile_%d.npy'
+        l1 = [1200, 1280, 1600, 1152]
+        l2 = [1200, 1280, 1600, 1152]
+        l3 = [1   , 1   , 1   , 1   ]
+        shapes = zip(l1, l2, l3)
+        for i,shape in enumerate(shapes):
+            infile = infile_fmt % i
+            outfile = outfile_fmt % i
+            arr = np.random.randn(*shape).astype('float32' if self.prec == 'float' else 'float64')
+            np.save(infile, arr)
+            os.stat('.')
+            self.files_to_unlink.append(infile)
+
+            self.call_exec(shape, infile, outfile)
+            os.stat('.')
+            self.files_to_unlink.append(outfile)
+
+            arr2 = None
+            try:
+                arr2 = np.load(outfile)
+            except os.error:
+                raise TestFailure('testee\'s output file wasnt loadable')
+            arr = np.fft.rfftn(arr).astype('complex64' if self.prec == 'float' else 'complex128')
+            err = np.max(np.abs(arr/np.sqrt(np.prod(shape)) - arr2/np.sqrt(np.prod(shape))))
+            print '> difference is %.18e' % err
+            maxerr = 1e-5 if self.prec == 'float' else 1e-14
+            if err > maxerr:
+                raise TestFailure('test concluded with too great an error')
 
 if __name__ == '__main__':
     #tests = [TestA(prec='float',inplace=0), TestA(prec='double',inplace=0), TestA(prec='float',inplace=1), TestA(prec='double',inplace=1)]
-    tests = [TestB(prec='float',inplace=0), TestB(prec='double',inplace=0), TestB(prec='float',inplace=1), TestB(prec='double',inplace=1)]
+    #tests = [TestB(prec='float',inplace=0), TestB(prec='double',inplace=0), TestB(prec='float',inplace=1), TestB(prec='double',inplace=1)]
+    tests = [TestC(prec='float',inplace=0), TestC(prec='double',inplace=0), TestC(prec='float',inplace=1), TestC(prec='double',inplace=1)]
 
     for test in tests:
         try:
