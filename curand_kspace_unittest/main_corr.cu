@@ -3,6 +3,7 @@
 #include <cuda/cufft_wrapper.hpp>
 #include <common/cu_error.hpp>
 #include <cuda/noise.hpp>
+#include <ctime>
 
 typedef float Float;
 
@@ -26,7 +27,7 @@ int main(int argc, char* argv[]){
 
     GPUArray dev1(host1);
 
-    NoiseHostApi<Float> noise;
+    NoiseHostApi<Float> noise(clock() % 1234);
     PlanC2R c2r(shape);
 
     int elems = shape.x * shape.y * shape.z;

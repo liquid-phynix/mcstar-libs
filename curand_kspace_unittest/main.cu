@@ -2,6 +2,7 @@
 #include <cuda/array_abstraction.hpp>
 #include <common/cu_error.hpp>
 #include <cuda/noise.hpp>
+#include <ctime>
 
 typedef float Float;
 
@@ -23,7 +24,7 @@ int main(int argc, char* argv[]){
     host_array.set_to(0);
     GPUArray dev_array(host_array);
 
-    NoiseHostApi<Float> noise;
+    NoiseHostApi<Float> noise(clock() % 1234);
 
     noise.fill_kspace(dev_array);
     dev_array >> host_array;
@@ -31,4 +32,3 @@ int main(int argc, char* argv[]){
 
     return 0;
 }
-// nvcc -ccbin=g++-4.8 -std=c++11 -I/home/mcstar/src/mcstar-libs -arch=sm_35 -lcurand -o main main.cu
