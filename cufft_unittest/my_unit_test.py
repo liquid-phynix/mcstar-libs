@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 
 LIBS='/home/mcstar/src/mcstar-libs/'
-CXX='g++-4.8'
+CXX='/opt/rh/devtoolset-2/root/usr/bin/g++'
 CCAP='35'
 
 SRC='main.cu'
@@ -146,8 +146,8 @@ class TestC(Tests):
     # CYCLE, PREC, INPLACE
     def __init__(self, prec='float', inplace=1):
         self.prec = prec
-        self.name = 'TestB'
-        super(TestB, self).__init__((0, prec, inplace))
+        self.name = 'TestC'
+        super(TestC, self).__init__((0, prec, inplace))
         self.files_to_unlink = []
     def __del__(self):
         #print 'to unlink: %s' % str(self.files_to_unlink)
@@ -158,9 +158,9 @@ class TestC(Tests):
     def __call__(self):
         infile_fmt = 'infile_%d.npy'
         outfile_fmt = 'outfile_%d.npy'
-        l1 = [1200, 1280, 1600, 1152]
+        l1 = [1   , 1   , 1   , 1   ]
         l2 = [1200, 1280, 1600, 1152]
-        l3 = [1   , 1   , 1   , 1   ]
+        l3 = [1200, 1280, 1600, 1152]
         shapes = zip(l1, l2, l3)
         for i,shape in enumerate(shapes):
             infile = infile_fmt % i
@@ -182,7 +182,7 @@ class TestC(Tests):
             arr = np.fft.rfftn(arr).astype('complex64' if self.prec == 'float' else 'complex128')
             err = np.max(np.abs(arr/np.sqrt(np.prod(shape)) - arr2/np.sqrt(np.prod(shape))))
             print '> difference is %.18e' % err
-            maxerr = 1e-5 if self.prec == 'float' else 1e-14
+            maxerr = 1e-5 if self.prec == 'float' else 1e-13
             if err > maxerr:
                 raise TestFailure('test concluded with too great an error')
 
