@@ -159,14 +159,14 @@ namespace Array {
                 CUERR(cudaPeekAtLastError());
             }
             //memcpy(this->m_ptr_save, this->m_ptr, this->m_bytes);
-            F* tmp = this->m_ptr;
-            this->m_ptr = this->m_ptr_save;
-            this->m_ptr_save = tmp;
+            //F* tmp = this->m_ptr;
+            //this->m_ptr = this->m_ptr_save;
+            //this->m_ptr_save = tmp;
 #if 1
                 //std::cout << "started saving " << fn << std::endl;
                 int3 rshape = shape_tr(this->real_vext());
                 int3 cshape = shape_tr(this->cmpl_vext());
-                numpy_save<F, Kind>(fn, this->m_dims, (int*)&rshape, (int*)&cshape, this->m_ptr_save);
+                numpy_save<F, Kind>(fn, this->m_dims, (int*)&rshape, (int*)&cshape, this->m_ptr);
                 //std::cout << "finished saving " << fn << std::endl;
 #else
             m_done_saving = std::async([this, fn](){
