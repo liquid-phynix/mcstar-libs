@@ -77,7 +77,7 @@ namespace FFT {
                     CUFFTERR(cufftSetCompatibilityMode(m_plan, CUFFT_COMPATIBILITY_NATIVE)); }
 
             ~CufftPlan(){ CUFFTERR(cufftDestroy(m_plan)); }
-            void execute(Array::GPUArray<F>& arr){ execute(arr, arr); }
+            //void execute(Array::GPUArray<F>& arr){ execute(arr, arr); }
             void execute(Array::GPUArray<F>& in, Array::GPUArray<F>& out){
                 assert(in.real_vext() == m_shape and out.real_vext() == m_shape
                         and "array dimensions in plan and execute phase do not match up");
