@@ -82,11 +82,11 @@ namespace Array {
         ~GPUArray(){ CUERR(cudaFree(this->m_ptr)); }
         void operator>>(GPUArray<F>& o){
             assert(o.real_vext() == this->m_ext_real and "array dimensions differ");
-            cudaMemcpy(o.ptr_void(), this->m_ptr, this->m_bytes, cudaMemcpyDeviceToDevice);
+            CUERR(cudaMemcpy(o.ptr_void(), this->m_ptr, this->m_bytes, cudaMemcpyDeviceToDevice));
             CUERR(cudaPeekAtLastError()); }
         void operator>>(CPUArray<F>& o){
             assert(o.real_vext() == this->m_ext_real and "array dimensions differ");
-            cudaMemcpy(o.ptr_void(), this->m_ptr, this->m_bytes, cudaMemcpyDeviceToHost);
+            CUERR(cudaMemcpy(o.ptr_void(), this->m_ptr, this->m_bytes, cudaMemcpyDeviceToHost));
             CUERR(cudaPeekAtLastError()); }
         void operator%(GPUArray<F>& o){
             assert(o.real_vext() == this->m_ext_real and "array dimensions differ");
@@ -122,7 +122,7 @@ namespace Array {
             memcpy(o.ptr_void(), this->m_ptr, this->m_bytes); }
         void operator>>(GPUArray<F>& o){
             assert(o.real_vext() == this->m_ext_real and "array dimensions differ");
-            cudaMemcpy(o.ptr_void(), this->m_ptr, this->m_bytes , cudaMemcpyHostToDevice);
+            CUERR(cudaMemcpy(o.ptr_void(), this->m_ptr, this->m_bytes , cudaMemcpyHostToDevice));
             CUERR(cudaPeekAtLastError()); }
         void operator%(CPUArray<F>& o){
             assert(o.real_vext() == this->m_ext_real and "array dimensions differ");
@@ -152,20 +152,31 @@ namespace Array {
                          memcpy(this->m_ptr, data.data(), this->m_bytes);
                          fprintf(stderr, "*** array initialized from file <%s>\n", fn.c_str()); fflush(stderr); }
         template <typename Kind=AsReal> void save(const std::string fn){
-            std::cout << "entered saving " << fn << std::endl;
+            //std::cout << "entered saving " << fn << std::endl;
             if(m_done_saving.valid()) m_done_saving.wait();
             if(this->m_ptr_save == NULL){
                 CUERR(cudaHostAlloc((void**)&this->m_ptr_save, this->m_bytes, cudaHostAllocDefault));
                 CUERR(cudaPeekAtLastError());
             }
-            memcpy(this->m_ptr_save, this->m_ptr, this->m_bytes);
-            m_done_saving = std::async([this, &fn](){
+            //memcpy(this->m_ptr_save, this->m_ptr, this->m_bytes);
+            F* tmp = this->m_ptr;
+            this->m_ptr = this->m_ptr_save;
+            this->m_ptr_save = tmp;
+#if 1
+                //std::cout << "started saving " << fn << std::endl;
+                int3 rshape = shape_tr(this->real_vext());
+                int3 cshape = shape_tr(this->cmpl_vext());
+                numpy_save<F, Kind>(fn, this->m_dims, (int*)&rshape, (int*)&cshape, this->m_ptr_save);
+                //std::cout << "finished saving " << fn << std::endl;
+#else
+            m_done_saving = std::async([this, fn](){
                 std::cout << "started saving " << fn << std::endl;
                 int3 rshape = shape_tr(this->real_vext());
                 int3 cshape = shape_tr(this->cmpl_vext());
                 numpy_save<F, Kind>(fn, this->m_dims, (int*)&rshape, (int*)&cshape, this->m_ptr_save);
                 std::cout << "finished saving " << fn << std::endl;
             });
+#endif
         }
         //template <typename Kind = AsReal> void save(const boost::format fmt){
             //this->save(fmt.str()); }
