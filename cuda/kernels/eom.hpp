@@ -70,7 +70,6 @@ __global__ void kernel_update_eom_py(Float2* arr_kpsi, Float2* arr_knonlin, Floa
     arr_kpsi[idx] = { (kpsi.x + dt * dop.x * knonlin.x + dt * namp * k * knoise.x) / denom,
                       (kpsi.y + dt * dop.x * knonlin.y + dt * namp * k * knoise.y) / denom };
 }
-
 void call_kernel_update_eom_py(GPUArray& arr_kpsi, GPUArray& arr_knonlin, GPUArray& arr_knoise,
                                Float namp, Float dt, Float eps, Float3 lens){
   Launch l(arr_kpsi.cmpl_vext());
