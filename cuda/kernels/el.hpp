@@ -24,18 +24,23 @@ __global__ void kernel_update_el(Float2* arr_kpsi, Float2* arr_knonlin,
         maxes[(blockIdx.z * gridDim.y + blockIdx.y) * gridDim.x + blockIdx.x] = maximum;
     }
 }
-Float call_kernel_update_el(GPUArray& arr_kpsi, GPUArray& arr_knonlin,
-                           Float dt, Float eps, Float3 lens){
-  Launch l(arr_kpsi.cmpl_vext());
-  dim3 gs = l.get_gs();
-  dim3 bs = l.get_bs();
-  float* maxes = new float[gs.x * gs.y * gs.z];
-  kernel_update_el<<<gs, bs, bs.x * bs.y * bs.z * sizeof(float)>>>(arr_kpsi.ptr_cmpl(), arr_knonlin.ptr_cmpl(), maxes, arr_kpsi.real_vext(), arr_kpsi.cmpl_vext(), dt, eps, lens);
-  float max = 0;
-  for(int ii = 0; ii < gs.x * gs.y * gs.z; ii++){
-      max = max > maxes[ii] ? max : maxes[ii]; }
-  delete[] maxes;
-  CUERR(cudaThreadSynchronize());
-  return max;
+Float call_kernel_update_el(GPUArray& arr_kpsi, GPUArray& arr_knonlin, Float dt, Float eps, Float3 lens){
+    Launch l(arr_kpsi.cmpl_vext());
+    dim3 gs = l.get_gs();
+    dim3 bs = l.get_bs();
+    int maxeslen = gs.x * gs.y * gs.z;
+    float* maxes;
+    CUERR(cudaHostAlloc((void**)&maxes, maxeslen * sizeof(float), cudaHostAllocDefault));
+    //for(int ii = 0; ii < maxeslen; ii++) maxes[ii] = 123;
+    kernel_update_el<<<gs, bs, bs.x * bs.y * bs.z * sizeof(float)>>>(arr_kpsi.ptr_cmpl(), arr_knonlin.ptr_cmpl(), maxes, arr_kpsi.real_vext(), arr_kpsi.cmpl_vext(), dt, eps, lens);
+    CUERR(cudaThreadSynchronize());
+    float max = 0;
+    for(int ii = 0; ii < gs.x * gs.y * gs.z; ii++){
+        //std::cout << maxes[ii] << "\t";
+        max = max > maxes[ii] ? max : maxes[ii]; }
+    //std::cout << std::endl;
+    CUERR(cudaFreeHost(maxes));
+    CUERR(cudaPeekAtLastError());
+    return max;
 }
 
