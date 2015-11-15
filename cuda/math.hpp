@@ -148,3 +148,6 @@ std::pair<int2,double> calc_closest_lattice_indices(int2 n1n2, double2 tro_a, do
      else return roundup235(n, i+1);
  }
 
+int isgn(int val){
+    return (val > 0) - (val < 0);
+}
