@@ -35,4 +35,5 @@ void call_kernel_divergence(GPUArray* arr_eta0, GPUArray* arr_eta1, GPUArray* ar
       assert(shape.x != 1 and shape.y != 1 and shape.z != 1 and "not a 3d array");
       kernel_calc_noise_div_3d<<<l.get_gs(), l.get_bs()>>>(arr_eta0->ptr_real(), arr_eta1->ptr_real(), arr_eta2->ptr_real(), arr_divnoise->ptr_real(), shape, hh);
   }
-  CUERR(cudaThreadSynchronize()); }
+  CUERR(cudaThreadSynchronize());
+  CUERR(cudaPeekAtLastError()); }

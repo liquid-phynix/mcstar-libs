@@ -31,12 +31,14 @@ void call_kernel_update_eom(GPUArray& arr_kpsi, GPUArray& arr_knonlin, GPUArray&
   Launch l(arr_kpsi.cmpl_vext());
   kernel_update_eom<<<l.get_gs(), l.get_bs()>>>(arr_kpsi.ptr_cmpl(), arr_knonlin.ptr_cmpl(), arr_knoise.ptr_cmpl(), arr_kpsi.real_vext(), arr_kpsi.cmpl_vext(), namp, dt, eps, lens);
   CUERR(cudaThreadSynchronize());
+  CUERR(cudaPeekAtLastError());
 }
 void call_kernel_update_eom(GPUArray& arr_kpsi, GPUArray& arr_knonlin,
                             Float namp, Float dt, Float eps, Float3 lens){
   Launch l(arr_kpsi.cmpl_vext());
   kernel_update_eom<<<l.get_gs(), l.get_bs()>>>(arr_kpsi.ptr_cmpl(), arr_knonlin.ptr_cmpl(), NULL, arr_kpsi.real_vext(), arr_kpsi.cmpl_vext(), namp, dt, eps, lens);
   CUERR(cudaThreadSynchronize());
+  CUERR(cudaPeekAtLastError());
 }
 
 const Float py_c0  =  -57.94636917114257;
@@ -75,4 +77,5 @@ void call_kernel_update_eom_py(GPUArray& arr_kpsi, GPUArray& arr_knonlin, GPUArr
   Launch l(arr_kpsi.cmpl_vext());
   kernel_update_eom_py<<<l.get_gs(), l.get_bs()>>>(arr_kpsi.ptr_cmpl(), arr_knonlin.ptr_cmpl(), arr_knoise.ptr_cmpl(), arr_kpsi.real_vext(), arr_kpsi.cmpl_vext(), namp, dt, eps, lens);
   CUERR(cudaThreadSynchronize());
+  CUERR(cudaPeekAtLastError());
 }

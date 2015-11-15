@@ -9,5 +9,6 @@ void call_kernel_noise_evolution(GPUArray& arr_xi, GPUArray& arr_eta, Float alph
     int3 shape = arr_eta.real_vext();
     Launch l(shape);
     kernel_calc_noise_ev<<<l.get_gs(), l.get_bs()>>>(arr_xi.ptr_real(), arr_eta.ptr_real(), alpha, beta, shape);
-    CUERR(cudaThreadSynchronize()); }
+    CUERR(cudaThreadSynchronize());
+    CUERR(cudaPeekAtLastError()); }
 

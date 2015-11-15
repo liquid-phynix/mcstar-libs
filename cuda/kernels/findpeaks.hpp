@@ -59,4 +59,5 @@ void call_kernel_findpeaks(GPUArray& input, std::string peaks_outfn, std::string
     } else std::cout << "output file <" << oorder_outfn << "> cannot be opened for writing" << std::endl;
 
     CUERR(cudaFreeHost(host_ptr));
-    CUERR(cudaThreadSynchronize()); }
+    CUERR(cudaThreadSynchronize());
+    CUERR(cudaPeekAtLastError()); }

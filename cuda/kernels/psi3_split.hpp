@@ -22,4 +22,5 @@ void call_kernel_psi3_split(GPUArray& arr, GPUArray* pot = NULL, Float mu = Floa
         kernel_psi3_split<<<l.get_gs(), l.get_bs()>>>(arr.ptr_real(), nf, mu, elems);
     else
         kernel_psi3_split_pot<<<l.get_gs(), l.get_bs()>>>(arr.ptr_real(), pot->ptr_real(), nf, mu, elems);
-    CUERR(cudaThreadSynchronize()); }
+    CUERR(cudaThreadSynchronize());
+    CUERR(cudaPeekAtLastError()); }
