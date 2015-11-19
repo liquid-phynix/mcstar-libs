@@ -83,10 +83,10 @@ __global__ void kernel_calc_fen(Float* arr_psi, Float* arr_lpsi, int3 rdims, flo
 
 float call_kernel_calc_fen(GPUArray& arr_psi, GPUArray& arr_lpsi, Float3 hh){
     Launch l(arr_psi.cmpl_vext());
-    dim3 gs = l.get_gs();
+    dim3 bs = l.get_bs();
     float* sum;
     CUERR(cudaMallocHost(&sum, sizeof(float)));
-    kernel_calc_fen<<<gs, l.get_bs(), gs.x * gs.y * gs.z * sizeof(Float)>>>(arr_psi.ptr_real(), arr_lpsi.ptr_real(), arr_psi.real_vext(), sum);
+    kernel_calc_fen<<<l.get_gs(), bs, bs.x * bs.y * bs.z * sizeof(Float)>>>(arr_psi.ptr_real(), arr_lpsi.ptr_real(), arr_psi.real_vext(), sum);
     CUERR(cudaThreadSynchronize());
     float _sum = *sum * hh.x * hh.y * hh.z;
     CUERR(cudaFreeHost(sum));
