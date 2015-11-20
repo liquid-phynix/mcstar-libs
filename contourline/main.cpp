@@ -21,7 +21,7 @@ int main(int, char *[]){
     for(int i = 0; i < line.size(); i++){
         std::cout << line[i].first << " " << line[i].second << "\n";
     }
-    std::cout << endl;
+    std::cout << std::endl;
 
     return EXIT_SUCCESS;
 }
