@@ -22,7 +22,7 @@ void call_kernel_gaussian_mult(GPUArray& arr_kpsi, Float3 lens, Float3 hh, Float
 
 __global__ void kernel_gaussian_init(Float2* arr_kpsi, int3 rdims, int3 cdims, Float3 lens, Float3 hh, Float divs_per_sigma){
     IDX012(cdims);
-    const Float2 kpsi = arr_kpsi[idx];
+    //const Float2 kpsi = arr_kpsi[idx];
     const Float k0 = K(i0, rdims.x, lens.x);
     const Float k1 = K(i1, rdims.y, lens.y);
     const Float k2 = K(i2, rdims.z, lens.z);
