@@ -1,13 +1,13 @@
 #include <contourline/contourline.hpp>
 
-#include <vtk/vtkVersion.h>
-#include <vtk/vtkSmartPointer.h>
-#include <vtk/vtkPointData.h>
-#include <vtk/vtkFloatArray.h>
-#include <vtk/vtkCell.h>
-#include <vtk/vtkImageData.h>
-#include <vtk/vtkMarchingSquares.h>
-#include <vtk/vtkStripper.h>
+#include <vtkVersion.h>
+#include <vtkSmartPointer.h>
+#include <vtkPointData.h>
+#include <vtkFloatArray.h>
+#include <vtkCell.h>
+#include <vtkImageData.h>
+#include <vtkMarchingSquares.h>
+#include <vtkStripper.h>
 
 Lines contourlines(float* array, int n0, int n1, float h0, float h1, float value){
     vtkSmartPointer<vtkImageData> id = vtkSmartPointer<vtkImageData>::New();
