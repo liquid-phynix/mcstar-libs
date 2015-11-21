@@ -1,3 +1,9 @@
+#include <common/maximum_struct.hpp>
+
+typedef Maximum<Float> Max;
+
+__device__ int _2d_gpu_maxlist_len;
+
 __global__ void kernel_findpeaks_2d(Float* arr, int3 rdims, Max* host_arr, Float ths){
     IDX012(rdims);
     Float localval = arr[idx];
@@ -10,7 +16,7 @@ __global__ void kernel_findpeaks_2d(Float* arr, int3 rdims, Max* host_arr, Float
         }
     }
     if(local_peak and localval >= ths){
-        int host_idx = atomicAdd(&gpu_maxlist_len, 1);
+        int host_idx = atomicAdd(&_2d_gpu_maxlist_len, 1);
         Max m;
         m.i0 = i0;
         m.i1 = i1;
@@ -30,9 +36,9 @@ void call_kernel_findpeaks_2d(GPUArray& input, std::string peaks_outfn, Float3 h
     CUERR(cudaHostAlloc((void**)&host_ptr, elems * sizeof(Max), cudaHostAllocDefault));
     int num_of_maxima= 0;
     Launch l(input.real_vext());
-    CUERR(cudaMemcpyToSymbol(gpu_maxlist_len, &num_of_maxima, sizeof(int)));
+    CUERR(cudaMemcpyToSymbol(_2d_gpu_maxlist_len, &num_of_maxima, sizeof(int)));
     kernel_findpeaks_2d<<<l.get_gs(), l.get_bs()>>>(input.ptr_real(), input.real_vext(), host_ptr, ths);
-    CUERR(cudaMemcpyFromSymbol(&num_of_maxima, gpu_maxlist_len, sizeof(int)));
+    CUERR(cudaMemcpyFromSymbol(&num_of_maxima, _2d_gpu_maxlist_len, sizeof(int)));
     std::cerr << "found " << num_of_maxima << " maxima" << std::endl;
 
     FILE* outfile = fopen(peaks_outfn.c_str(), "w");
