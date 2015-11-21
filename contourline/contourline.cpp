@@ -6,7 +6,8 @@
 #include <vtkFloatArray.h>
 #include <vtkCell.h>
 #include <vtkImageData.h>
-#include <vtkMarchingSquares.h>
+//#include <vtkMarchingSquares.h>
+#include <vtkContourFilter.h>
 #include <vtkStripper.h>
 
 Lines contourlines(float* array, int n0, int n1, float h0, float h1, float value){
@@ -17,7 +18,8 @@ Lines contourlines(float* array, int n0, int n1, float h0, float h1, float value
     vtkSmartPointer<vtkFloatArray> fa = vtkSmartPointer<vtkFloatArray>::New();
     fa->SetArray(array, n0 * n1, 1);
     id->GetPointData()->SetScalars(fa);
-    vtkSmartPointer<vtkMarchingSquares> cont = vtkSmartPointer<vtkMarchingSquares>::New();
+    vtkSmartPointer<vtkContourFilter> cont = vtkSmartPointer<vtkContourFilter>::New();
+    //vtkSmartPointer<vtkMarchingSquares> cont = vtkSmartPointer<vtkMarchingSquares>::New();
     cont->SetInputData(id);
     cont->SetValue(0, value);
     vtkSmartPointer<vtkStripper> cs = vtkSmartPointer<vtkStripper>::New();
