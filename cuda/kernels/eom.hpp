@@ -72,6 +72,8 @@ __global__ void kernel_calc_fen(Float* arr_psi, Float* arr_lpsi, int3 rdims, flo
     const Float psi = arr_psi[idx];
     const Float lpsi = arr_lpsi[idx];
     fen[fen_idx] = 0.5 * psi * (lpsi - psi + 0.5 * psi * psi * psi);
+    arr_lpsi[idx] = fen[fen_idx];
+
     __syncthreads();
     Float partial_sum = 0;
     if(threadIdx.x==0 and threadIdx.y==0 and threadIdx.z==0){
@@ -82,7 +84,7 @@ __global__ void kernel_calc_fen(Float* arr_psi, Float* arr_lpsi, int3 rdims, flo
 }
 
 float call_kernel_calc_fen(GPUArray& arr_psi, GPUArray& arr_lpsi, Float3 hh){
-    Launch l(arr_psi.cmpl_vext());
+    Launch l(arr_psi.real_vext());
     dim3 bs = l.get_bs();
     float* sum;
     CUERR(cudaMallocHost(&sum, sizeof(float)));
