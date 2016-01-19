@@ -158,7 +158,7 @@ void _main(int pnum, int dnum){
     }
     std::cout << "size\t\ttimes\thost w\t\thost rw\t\tdev r s\t\tdev w s\t\tdev k s\t\tdiff%\n";
     allofit.stop();
-    printf("all in all %f seconds\n", allofit.get_ms() * 1000);
+    printf("all in all %f seconds\n", allofit.get_ms() / 1000);
 
   delete[] host_ptr;
 }

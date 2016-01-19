@@ -195,7 +195,7 @@ void _main(int pnum, int dnum){
     }
     std::cout << "size\t\ttimes\thost w\t\thost rw\t\tmap1\t\tunmap1\t\tmap2\t\tunmap2\t\tk bw\t\tdiff%\n";
     allofit.stop();
-    printf("all in all %f seconds\n", allofit.get_ms() * 1000);
+    printf("all in all %f seconds\n", allofit.get_ms() / 1000);
 
 }
 
