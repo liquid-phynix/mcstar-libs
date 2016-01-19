@@ -82,7 +82,7 @@ void _main(int pnum, int dnum){
     }
 
     const cl_ulong transfer = 1 * LIST_LEN;
-    const int min_exp = 10;
+    const int min_exp = 20;
     std::cout << "size\t\ttimes\thost w\t\thost rw\t\tdev r s\t\tdev w s\t\tdev k s\t\tdiff%\n";
     for(int exp = start_exp; exp >= min_exp; exp--){
         const cl_ulong len = 1 << exp;
