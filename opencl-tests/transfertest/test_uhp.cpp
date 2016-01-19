@@ -81,6 +81,9 @@ void _main(int pnum, int dnum){
         queue.finish();
     }
 
+    TimeAcc allofit;
+    allofit.start();
+
     const cl_ulong transfer = 1 * LIST_LEN;
     const int min_exp = 20;
     std::cout << "size\t\ttimes\thost w\t\thost rw\t\tdev r s\t\tdev w s\t\tdev k s\t\tdiff%\n";
@@ -158,6 +161,8 @@ void _main(int pnum, int dnum){
                 mb, iters, bw_host_write, bw_host_read_write, bw_dev_read, bw_dev_write, bw_dev_kernel, difft_percent);
     }
     std::cout << "size\t\ttimes\thost w\t\thost rw\t\tdev r s\t\tdev w s\t\tdev k s\t\tdiff%\n";
+    allofit.stop();
+    printf("all in all %f seconds\n", allofit.get_ms() * 1000);
 
     queue.enqueueUnmapMemObject(buffer, host_ptr);
 

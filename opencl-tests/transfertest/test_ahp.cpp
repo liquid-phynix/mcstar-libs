@@ -74,6 +74,9 @@ void _main(int pnum, int dnum){
         queue.finish();
     }
 
+    TimeAcc allofit;
+    allofit.start();
+
     const cl_ulong transfer = 1 * LIST_LEN;
     const int min_exp = 20;
     std::cout << "size\t\ttimes\thost w\t\thost rw\t\tmap1\t\tunmap1\t\tmap2\t\tunmap2\t\tk bw\t\tdiff%\n";
@@ -191,6 +194,8 @@ void _main(int pnum, int dnum){
                bw_dev_kernel, difft_percent);
     }
     std::cout << "size\t\ttimes\thost w\t\thost rw\t\tmap1\t\tunmap1\t\tmap2\t\tunmap2\t\tk bw\t\tdiff%\n";
+    allofit.stop();
+    printf("all in all %f seconds\n", allofit.get_ms() * 1000);
 
 }
 
