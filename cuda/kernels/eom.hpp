@@ -13,6 +13,50 @@ __global__ void kernel_update_eom(Float2* arr_kpsi, Float2* arr_knonlin, Float2*
                       (kpsi.y + dt * dop.x * knonlin.y + dt * knoise.y) / denom }; }
 */
 
+__global__ void kernel_update_eom_hpfcnoise(Float2* arr_kpsi, Float2* arr_knonlin,
+                                            Float2* arr_knoise1, Float2* arr_knoise2, Float2* arr_knoise3,
+                                            int3 rdims, int3 cdims, Float namp, Float dt, Float eps, Float3 lens){
+    namp *= sqrtf(rdims.x * rdims.y * rdims.z);
+    IDX012(cdims);
+
+    const Float kappa = Float(4) / Float(3);
+    const Float c2 = sqrtf(Float(1) + kappa / Float(2) + sqrtf(Float(1) + kappa));
+    const Float c1 = kappa / c2 / Float(2);
+
+    const Float2 kpsi = arr_kpsi[idx];
+    const Float2 knonlin = arr_knonlin[idx];
+    const Float2 knoise1 = arr_knoise1[idx];
+    const Float2 knoise2 = arr_knoise2[idx];
+    const Float2 knoise3 = arr_knoise3[idx];
+    const Float k0 = K(i0, rdims.x, lens.x);
+    const Float k1 = K(i1, rdims.y, lens.y);
+    const Float2 dop = L_L2(k0, k1, K(i2, rdims.z, lens.z));
+    const Float k = sqrtf(- dop.x);
+    const Float denom = Float(1) - dt * ((Float(2) - eps) * dop.x + Float(2) * dop.y + dop.x * dop.y);
+
+    Float2 noise;
+    noise.x = (c1 * k0 * k0 + c2 * k1 * k1) * knoise1.x + (c2 * k0 * k0 + c1 * k1 * k1) * knoise2.x + Float(2) * k0 * k1 * knoise3.x;
+    noise.y = (c1 * k0 * k0 + c2 * k1 * k1) * knoise1.y + (c2 * k0 * k0 + c1 * k1 * k1) * knoise2.y + Float(2) * k0 * k1 * knoise3.y;
+    noise.x = k <= Float(0.25) ? noise.x : Float(0);
+    noise.y = k <= Float(0.25) ? noise.y : Float(0);
+
+    arr_kpsi[idx] = { (kpsi.x + dt * dop.x * knonlin.x + dt * namp * noise.x) / denom,
+                      (kpsi.y + dt * dop.x * knonlin.y + dt * namp * noise.y) / denom };
+}
+void call_kernel_update_eom_hpfcnoise(GPUArray& arr_kpsi, GPUArray& arr_knonlin,
+                                      GPUArray& arr_knoise1, GPUArray& arr_knoise2, GPUArray& arr_knoise3,
+                                      Float namp, Float dt, Float eps, Float3 lens){
+  int3 shape = arr_kpsi.real_vext();
+  if(shape.z != 1){
+      std::cerr << "fuuuck this is only 2D, mate!" << std::endl;
+      std::exit(EXIT_FAILURE);
+  }
+  Launch l(arr_kpsi.cmpl_vext());
+  kernel_update_eom_hpfcnoise<<<l.get_gs(), l.get_bs()>>>(arr_kpsi.ptr_cmpl(), arr_knonlin.ptr_cmpl(), arr_knoise1.ptr_cmpl(), arr_knoise2.ptr_cmpl(), arr_knoise3.ptr_cmpl(), arr_kpsi.real_vext(), arr_kpsi.cmpl_vext(), namp, dt, eps, lens);
+  CUERR(cudaThreadSynchronize());
+  CUERR(cudaPeekAtLastError());
+}
+
 __global__ void kernel_update_eom(Float2* arr_kpsi, Float2* arr_knonlin, Float2* arr_knoise,
                                   int3 rdims, int3 cdims, Float namp, Float dt, Float eps, Float3 lens){
     namp *= sqrtf(rdims.x * rdims.y * rdims.z);
